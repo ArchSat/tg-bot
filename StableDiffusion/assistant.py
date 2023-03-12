@@ -19,8 +19,8 @@ class StableDiffusionAssistant:
             # 'negative_prompt': settings['negative_prompt'],
             # 'seed': settings['seed'],
         }
-        if not inputs['seed']:
-            inputs.pop('seed')
-        if not inputs['negative_prompt']:
-            inputs.pop('negative_prompt')
+        # if not inputs['seed']:
+        #     inputs.pop('seed')
+        # if not inputs['negative_prompt']:
+        #     inputs.pop('negative_prompt')
         return self.version.predict(**inputs)
