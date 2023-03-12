@@ -12,12 +12,12 @@ class StableDiffusionAssistant:
         inputs = {
             'prompt': message.text,
             'image_dimensions': settings['image_dimensions'],
-            'negative_prompt': settings['negative_prompt'],
             'num_outputs': settings['num_outputs'],
             'num_inference_steps': settings['num_inference_steps'],
             'guidance_scale': settings['guidance_scale'],
             'scheduler': settings['scheduler'],
-            'seed': settings['seed'],
+            # 'negative_prompt': settings['negative_prompt'],
+            # 'seed': settings['seed'],
         }
         if not inputs['seed']:
             inputs.pop('seed')
