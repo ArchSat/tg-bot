@@ -6,7 +6,7 @@ build-job:
   stage: build
   script:
     - echo "Compiling the code..."
-    - /home/install_requirements.sh
+    - /home/tg-bot/install_requirements.sh
     - echo "Compile complete."
 
 
@@ -17,5 +17,5 @@ deploy-job:
     - echo "Deploying application..."
     - echo "Sync files..."
     - rsync -av --no-perms --no-owner --no-group --exclude ".git*" $CI_PROJECT_DIR/ /home/tg-bot
-    - /home/restart_services.sh
+    - /home/tg-bot/restart_services.sh
     - echo "Application successfully deployed."
