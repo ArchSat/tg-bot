@@ -12,7 +12,7 @@ class OpenAIAssistant:
     def __init__(self):
         self.message_history = {}
 
-    def create_completion_from_message(self, message: Message):
+    def create_completion_from_message(self, message: Message, user_chat_settings):
         user_id = message.from_user.id
         this_message = {'role': 'user', 'content': message.text}
         if user_id in self.message_history:
@@ -28,14 +28,17 @@ class OpenAIAssistant:
             self.message_history[user_id] = [this_message]
         completion = openai.ChatCompletion.acreate(model="gpt-3.5-turbo",
                                                    messages=self.message_history[user_id],
-                                                   max_tokens=1024,
-                                                   stream=True
+                                                   max_tokens=user_chat_settings['max_tokens'],
+                                                   stream=True,
+                                                   temperature=user_chat_settings['temperature']
                                                    )
-
         return completion
 
     def clear_message_history(self, user_id):
         self.message_history[user_id] = []
+
+    def get_history_len(self, user_id):
+        return len(self.message_history[user_id])
 
     def delete_first_message_from_history(self, user_id):
         if self.message_history[user_id]:

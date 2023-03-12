@@ -4,7 +4,7 @@ import os
 
 from aiogram import Bot, Dispatcher
 
-from handlers import settings, common
+from handlers import settings, common, create_images
 
 logging.basicConfig(level=logging.INFO)
 
@@ -14,6 +14,7 @@ async def main():
     dp = Dispatcher()
     dp.include_router(settings.router)
     dp.include_router(common.router)
+    dp.include_router(create_images.router)
     await dp.start_polling(bot)
 
 
