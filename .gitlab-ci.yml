@@ -1,5 +1,13 @@
 stages:
+  - build
   - deploy
+
+build-job:
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - /home/install_requirements.sh
+    - echo "Compile complete."
 
 
 deploy-job:
