@@ -56,9 +56,11 @@ def update_user_chat_settings(user_id, setting_name, value):
     if user:
         user_chat_settings = user.chat_settings.copy()
         user_chat_settings.update({setting_name: value})
+        if default_chatgpt_settings.get(setting_name, None) == value:
+            user_chat_settings.pop(setting_name)
         user.chat_settings = user_chat_settings
         session.commit()
-    else:
+    elif default_chatgpt_settings.get(setting_name, None) != value:
         register_user(user_id=user_id, chat_settings={setting_name: value})
 
 
@@ -67,7 +69,9 @@ def update_user_pictures_settings(user_id, setting_name, value):
     if user:
         user_pictures_settings = user.pictures_settings.copy()
         user_pictures_settings.update({setting_name: value})
+        if default_stable_diffusion_settings.get(setting_name, None) == value:
+            user_pictures_settings.pop(setting_name)
         user.user_pictures_settings = user_pictures_settings
         session.commit()
-    else:
+    elif default_stable_diffusion_settings.get(setting_name, None) == value:
         register_user(user_id=user_id, pictures_settings={setting_name: value})
