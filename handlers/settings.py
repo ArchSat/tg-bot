@@ -1,10 +1,12 @@
+import html
+
 from aiogram import Router, types
 from aiogram.filters import Command, Text
 from aiogram.types import Message
 
 from config.default_settings import default_chatgpt_settings, default_stable_diffusion_settings
 from database.quick_commands import select_user_chat_settings, \
-    select_user_pictures_settings, update_user_chat_settings, is_registered
+    select_user_pictures_settings, update_user_chat_settings, is_registered, update_user_pictures_settings
 
 router = Router()
 
@@ -20,18 +22,19 @@ def get_settings_text(user_id):
         chat_settings.update(user_chat_settings)
 
     text = f"""\n
-    Настройки текста:\n
-    Максимальная длина запоминаемых сообщений: {chat_settings['max_memory_messages']}\n
-    Максимальное число токенов в ответе: {chat_settings['max_tokens']}\n
-    Температура: {chat_settings['temperature']}\n
+    <b>Настройки текста:</b>\n
+    ├ max_memory_messages: {chat_settings['max_memory_messages']}\n
+    ├ max_tokens: {chat_settings['max_tokens']}\n
+    └ temperature: {chat_settings['temperature']}\n
     \n
-    Настройки изображений:\n
-    Разрешение изображений: {pictures_settings['image_dimensions']}\n
-    Количество сообщений на запрос: {pictures_settings['num_outputs']}\n
-    Количество шагов вывода: {pictures_settings['num_inference_steps']}\n
-    guidance_scale: {pictures_settings['guidance_scale']}\n
-    scheduler: {pictures_settings['scheduler']}\n"""
-    return text
+    <b>Настройки изображений:</b>\n
+    ├ image_dimensions: {pictures_settings['image_dimensions']}\n
+    ├ num_outputs: {pictures_settings['num_outputs']}\n
+    ├ num_inference_steps: {pictures_settings['num_inference_steps']}\n
+    ├ guidance_scale: {pictures_settings['guidance_scale']}\n
+    └ scheduler: {pictures_settings['scheduler']}\n
+    """
+    return text.replace('\\', '\\\\').replace('`', '\`')
 
 
 def get_settings_buttons():
@@ -57,19 +60,19 @@ def get_text_settings_buttons():
 @router.message(Command(commands=["settings"]))
 async def cmd_settings(message: Message):
     text = get_settings_text(message.from_user.id)
-    await message.answer(text, reply_markup=get_settings_buttons())
+    await message.answer(text, reply_markup=get_settings_buttons(), parse_mode='HTML')
 
 
 @router.callback_query(Text("settings_main"))
 async def btn_settings(callback: types.CallbackQuery):
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_settings_buttons(), parse_mode='HTML')
 
 
 @router.callback_query(Text("edit_text_settings"))
 async def btn_settings(callback: types.CallbackQuery):
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_text_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_text_settings_buttons(), parse_mode='HTML')
 
 
 def get_edit_max_memory_messages_btns():
@@ -93,7 +96,7 @@ async def set_max_memory_messages(callback: types.CallbackQuery):
     value = int(callback.data.replace('set_max_memory_', ''))
     update_user_chat_settings(user_id=callback.from_user.id, setting_name='max_memory_messages', value=value)
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_text_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_text_settings_buttons(), parse_mode='HTML')
 
 
 def get_edit_max_tokens_btns():
@@ -118,7 +121,7 @@ async def set_max_tokens(callback: types.CallbackQuery):
     value = int(callback.data.replace('set_max_tokens_', ''))
     update_user_chat_settings(user_id=callback.from_user.id, setting_name='max_tokens', value=value)
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_text_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_text_settings_buttons(), parse_mode='HTML')
 
 
 def get_edit_temperature_btns():
@@ -142,7 +145,7 @@ async def set_temperature(callback: types.CallbackQuery):
     value = float(callback.data.replace('set_temperature_', ''))
     update_user_chat_settings(user_id=callback.from_user.id, setting_name='temperature', value=value)
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_text_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_text_settings_buttons(), parse_mode='HTML')
 
 
 def get_image_settings_buttons():
@@ -161,7 +164,7 @@ def get_image_settings_buttons():
 @router.callback_query(Text("edit_image_settings"))
 async def btn_settings(callback: types.CallbackQuery):
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons(), parse_mode='HTML')
 
 
 def get_edit_image_dimensions_btns():
@@ -175,16 +178,17 @@ def get_edit_image_dimensions_btns():
 
 
 @router.callback_query(Text("edit_image_dimensions"))
-async def edit_max_tokens(callback: types.CallbackQuery):
+async def edit_image_dimensions(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=get_edit_image_dimensions_btns())
 
 
 @router.callback_query(Text(startswith="set_image_dimensions_"))
-async def set_max_tokens(callback: types.CallbackQuery):
+async def set_image_dimensions(callback: types.CallbackQuery):
     value = int(callback.data.replace('set_image_dimensions_', ''))
-    update_user_chat_settings(user_id=callback.from_user.id, setting_name='image_dimensions', value=f'{value}x{value}')
+    update_user_pictures_settings(user_id=callback.from_user.id, setting_name='image_dimensions',
+                                  value=f'{value}x{value}')
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons(), parse_mode='HTML')
 
 
 def get_edit_num_outputs_btns():
@@ -200,16 +204,16 @@ def get_edit_num_outputs_btns():
 
 
 @router.callback_query(Text("edit_num_outputs"))
-async def edit_max_tokens(callback: types.CallbackQuery):
+async def edit_num_outputs(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=get_edit_num_outputs_btns())
 
 
 @router.callback_query(Text(startswith="set_num_outputs_"))
-async def set_max_tokens(callback: types.CallbackQuery):
+async def set_num_outputs(callback: types.CallbackQuery):
     value = int(callback.data.replace('set_num_outputs_', ''))
-    update_user_chat_settings(user_id=callback.from_user.id, setting_name='num_outputs', value=value)
+    update_user_pictures_settings(user_id=callback.from_user.id, setting_name='num_outputs', value=value)
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons(), parse_mode='HTML')
 
 
 def get_edit_num_inference_steps_btns():
@@ -227,16 +231,16 @@ def get_edit_num_inference_steps_btns():
 
 
 @router.callback_query(Text("edit_num_inference_steps"))
-async def edit_max_tokens(callback: types.CallbackQuery):
+async def edit_num_inference_steps(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=get_edit_num_inference_steps_btns())
 
 
 @router.callback_query(Text(startswith="set_num_inference_steps_"))
-async def set_max_tokens(callback: types.CallbackQuery):
+async def set_num_inference_steps(callback: types.CallbackQuery):
     value = int(callback.data.replace('set_num_inference_steps_', ''))
-    update_user_chat_settings(user_id=callback.from_user.id, setting_name='num_inference_steps', value=value)
+    update_user_pictures_settings(user_id=callback.from_user.id, setting_name='num_inference_steps', value=value)
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons(), parse_mode='HTML')
 
 
 def get_edit_guidance_scale_btns():
@@ -249,16 +253,16 @@ def get_edit_guidance_scale_btns():
 
 
 @router.callback_query(Text("edit_guidance_scale"))
-async def edit_max_tokens(callback: types.CallbackQuery):
+async def edit_guidance_scale(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=get_edit_guidance_scale_btns())
 
 
 @router.callback_query(Text(startswith="set_guidance_scale_"))
-async def set_max_tokens(callback: types.CallbackQuery):
+async def set_guidance_scale(callback: types.CallbackQuery):
     value = float(callback.data.replace('set_guidance_scale_', ''))
-    update_user_chat_settings(user_id=callback.from_user.id, setting_name='guidance_scale', value=value)
+    update_user_pictures_settings(user_id=callback.from_user.id, setting_name='guidance_scale', value=value)
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons(), parse_mode='HTML')
 
 
 def get_edit_scheduler_btns():
@@ -276,13 +280,13 @@ def get_edit_scheduler_btns():
 
 
 @router.callback_query(Text("edit_scheduler"))
-async def edit_max_tokens(callback: types.CallbackQuery):
+async def edit_scheduler(callback: types.CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=get_edit_scheduler_btns())
 
 
 @router.callback_query(Text(startswith="set_scheduler_"))
-async def set_max_tokens(callback: types.CallbackQuery):
+async def set_scheduler(callback: types.CallbackQuery):
     value = callback.data.replace('set_scheduler_', '')
-    update_user_chat_settings(user_id=callback.from_user.id, setting_name='scheduler', value=value)
+    update_user_pictures_settings(user_id=callback.from_user.id, setting_name='scheduler', value=value)
     text = get_settings_text(callback.from_user.id)
-    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons())
+    await callback.message.edit_text(text=text, reply_markup=get_image_settings_buttons(), parse_mode='HTML')

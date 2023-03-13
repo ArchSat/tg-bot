@@ -71,7 +71,7 @@ def update_user_pictures_settings(user_id, setting_name, value):
         user_pictures_settings.update({setting_name: value})
         if default_stable_diffusion_settings.get(setting_name, None) == value:
             user_pictures_settings.pop(setting_name)
-        user.user_pictures_settings = user_pictures_settings
+        user.pictures_settings = user_pictures_settings
         session.commit()
     elif default_stable_diffusion_settings.get(setting_name, None) == value:
         register_user(user_id=user_id, pictures_settings={setting_name: value})
