@@ -43,7 +43,7 @@ class StableDiffusionAssistant:
                 "width": settings['image_dimensions'].split('x')[1],
             }
         }
-        response = requests.post(self.API_URL, headers=headers, json=payload)
+        response = requests.post(self.API_URL, headers=self.headers, json=payload)
         image = Image.open(io.BytesIO(response.content))
         return image
 
