@@ -29,10 +29,8 @@ def get_settings_text(user_id):
     \n
     <b>Настройки изображений:</b>\n
     ├ image_dimensions: {pictures_settings['image_dimensions']}\n
-    ├ num_outputs: {pictures_settings['num_outputs']}\n
     ├ num_inference_steps: {pictures_settings['num_inference_steps']}\n
     ├ guidance_scale: {pictures_settings['guidance_scale']}\n
-    └ scheduler: {pictures_settings['scheduler']}\n
     """
     return text.replace('\\', '\\\\').replace('`', '\`')
 

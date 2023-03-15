@@ -6,7 +6,7 @@ from PIL import Image
 from aiogram import Router
 from aiogram.enums import ChatAction
 from aiogram.filters import Text, Command
-from aiogram.types import Message
+from aiogram.types import Message, BufferedInputFile
 
 from StableDiffusion.assistant import StableDiffusionAssistant
 from database.quick_commands import select_user_pictures_settings
@@ -30,6 +30,6 @@ async def images_handler(message: Message):
         temp_image = io.BytesIO()
         image = Image.open(io.BytesIO(result.content))
         temp_image.name = 'image.jpeg'
-        image.save(temp_image, 'JPEG')
+        image.save(temp_image, 'png')
         temp_image.seek(0)
-        return await message.answer_photo(photo=temp_image)
+        return await message.answer_photo(photo=BufferedInputFile(file=temp_image.getvalue(), filename='SD21.png'))
