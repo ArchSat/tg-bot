@@ -16,7 +16,10 @@ openai = OpenAIAssistant()
 
 @router.message(Command(commands=['start']))
 async def cmd_start(message: Message):
-    await message.answer('Для создания настроек бота используйте /settings')
+    await message.answer('Данный бот представляет собой обертку для ChatGPT-3.5-turbo модели.\n'
+                         'Включена поддержка Stable Diffusion 2.1 по ключевому слову "нарисуй" '
+                         '(или с помощью команды /image)\n'
+                         'Для создания персональных настроек бота используйте команду /settings')
 
 
 @router.message(Command(commands=["clear_context"]))

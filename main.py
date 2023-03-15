@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 async def main():
-    bot = Bot(token=os.environ['bot_token'])
+    bot = Bot(token=os.environ['telegram_chatgpt_bot_token'])
     dp = Dispatcher()
     dp.include_router(settings.router)
     dp.include_router(common.router)
