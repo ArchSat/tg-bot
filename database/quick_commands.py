@@ -36,7 +36,7 @@ def select_user_chat_settings(user_id):
     user_chat_settings = default_chatgpt_settings.copy()
     try:
         user_chat_settings.update(settings[0])
-    except IndexError:
+    except (IndexError, TypeError):
         pass
     return user_chat_settings
 
@@ -46,7 +46,7 @@ def select_user_pictures_settings(user_id):
     user_stable_diffusion_settings = default_stable_diffusion_settings.copy()
     try:
         user_stable_diffusion_settings.update(settings[0])
-    except IndexError:
+    except (IndexError, TypeError):
         pass
     return user_stable_diffusion_settings
 

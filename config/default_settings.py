@@ -7,10 +7,10 @@ default_chatgpt_settings = {
 
 default_stable_diffusion_settings = {
     'image_dimensions': '768x768',
-    'num_outputs': 1,
+    # 'num_outputs': 1,
     'num_inference_steps': 100,
     'guidance_scale': 7.5,
-    'scheduler': 'DPMSolverMultistep',
+    # 'scheduler': 'DPMSolverMultistep',
     # 'negative_prompt': None,
     # 'seed': None
 }

@@ -151,10 +151,10 @@ async def set_temperature(callback: types.CallbackQuery):
 def get_image_settings_buttons():
     kb = [
         [types.InlineKeyboardButton(text="image_dimensions", callback_data="edit_image_dimensions")],
-        [types.InlineKeyboardButton(text="num_outputs", callback_data="edit_num_outputs")],
+        # [types.InlineKeyboardButton(text="num_outputs", callback_data="edit_num_outputs")],
         [types.InlineKeyboardButton(text="num_inference_steps", callback_data="edit_num_inference_steps")],
         [types.InlineKeyboardButton(text="guidance_scale", callback_data="edit_guidance_scale")],
-        [types.InlineKeyboardButton(text="scheduler", callback_data="edit_scheduler")],
+        # [types.InlineKeyboardButton(text="scheduler", callback_data="edit_scheduler")],
         [types.InlineKeyboardButton(text="back", callback_data="settings_main")]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=kb)
