@@ -1,6 +1,8 @@
 import asyncio
+import io
 
 import aiogram
+from PIL import Image
 from aiogram import Router
 from aiogram.enums import ChatAction
 from aiogram.filters import Text, Command
@@ -22,10 +24,12 @@ async def images_handler(message: Message):
     user_chat_settings = select_user_pictures_settings(message.from_user.id)
     result = await asyncio.get_event_loop().run_in_executor(None, stable_diffusion.create_image_from_message,
                                                             message, user_chat_settings)
-    if len(result) > 1:
-        media = []
-        for link in result:
-            media.append(aiogram.types.input_media_photo.InputMediaPhoto(media=link))
-        await aiogram.methods.send_media_group.SendMediaGroup(chat_id=message.chat.id, media=media)
+    if result.status_code != 200:
+        return await message.answer(f'При обращении к Stable Diffusion произошла ошибка: {result.text}')
     else:
-        await message.answer_photo(photo=result[0])
+        temp_image = io.BytesIO()
+        image = Image.open(io.BytesIO(result.content))
+        temp_image.name = 'image.jpeg'
+        image.save(temp_image, 'JPEG')
+        temp_image.seek(0)
+        return await message.answer_photo(photo=temp_image)

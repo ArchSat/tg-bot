@@ -39,12 +39,9 @@ class StableDiffusionAssistant:
             "parameters": {
                 "num_inference_steps": settings['num_inference_steps'],
                 "guidance_scale": settings['guidance_scale'],
-                "height": settings['image_dimensions'].split('x')[0],
-                "width": settings['image_dimensions'].split('x')[1],
+                "height": int(settings['image_dimensions'].split('x')[0]),
+                "width": int(settings['image_dimensions'].split('x')[1]),
             }
         }
         response = requests.post(self.API_URL, headers=self.headers, json=payload)
-        image = Image.open(io.BytesIO(response.content))
-        return image
-
-
+        return response
