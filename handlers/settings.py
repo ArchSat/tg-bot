@@ -4,7 +4,7 @@ from aiogram import Router, types
 from aiogram.filters import Command, Text
 from aiogram.types import Message
 
-from config.default_settings import default_chatgpt_settings, default_stable_diffusion_settings
+from config.default_settings import default_chatgpt_settings, default_delle_settings
 from database.quick_commands import select_user_chat_settings, \
     select_user_pictures_settings, update_user_chat_settings, is_registered, update_user_pictures_settings
 
@@ -13,7 +13,7 @@ router = Router()
 
 def get_settings_text(user_id):
     user_custom_settings = is_registered(user_id)
-    pictures_settings = default_stable_diffusion_settings.copy()
+    pictures_settings = default_delle_settings.copy()
     chat_settings = default_chatgpt_settings.copy()
     if user_custom_settings:
         user_pictures_settings = select_user_pictures_settings(user_id)
@@ -29,8 +29,7 @@ def get_settings_text(user_id):
     \n
     <b>Настройки изображений:</b>\n
     ├ image_dimensions: {pictures_settings['image_dimensions']}\n
-    ├ num_inference_steps: {pictures_settings['num_inference_steps']}\n
-    ├ guidance_scale: {pictures_settings['guidance_scale']}\n
+    ├ num_outputs: {pictures_settings['num_outputs']}\n
     """
     return text.replace('\\', '\\\\').replace('`', '\`')
 
@@ -149,10 +148,7 @@ async def set_temperature(callback: types.CallbackQuery):
 def get_image_settings_buttons():
     kb = [
         [types.InlineKeyboardButton(text="image_dimensions", callback_data="edit_image_dimensions")],
-        # [types.InlineKeyboardButton(text="num_outputs", callback_data="edit_num_outputs")],
-        [types.InlineKeyboardButton(text="num_inference_steps", callback_data="edit_num_inference_steps")],
-        [types.InlineKeyboardButton(text="guidance_scale", callback_data="edit_guidance_scale")],
-        # [types.InlineKeyboardButton(text="scheduler", callback_data="edit_scheduler")],
+        [types.InlineKeyboardButton(text="num_outputs", callback_data="edit_num_outputs")],
         [types.InlineKeyboardButton(text="back", callback_data="settings_main")]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=kb)
@@ -167,8 +163,9 @@ async def btn_settings(callback: types.CallbackQuery):
 
 def get_edit_image_dimensions_btns():
     kb = [
-        [types.InlineKeyboardButton(text="768x768", callback_data=f"set_image_dimensions_768")],
+        [types.InlineKeyboardButton(text="256x256", callback_data=f"set_image_dimensions_256")],
         [types.InlineKeyboardButton(text="512x512", callback_data=f"set_image_dimensions_512")],
+        [types.InlineKeyboardButton(text="1024x1024", callback_data=f"set_image_dimensions_1024")],
         [types.InlineKeyboardButton(text="back", callback_data="edit_image_settings")]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=kb)

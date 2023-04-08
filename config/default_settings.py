@@ -5,6 +5,12 @@ default_chatgpt_settings = {
     'temperature': 1
 }
 
+
+default_delle_settings = {
+    'image_dimensions': '512x512',
+    'num_outputs': 1,
+}
+
 default_stable_diffusion_settings = {
     'image_dimensions': '768x768',
     # 'num_outputs': 1,

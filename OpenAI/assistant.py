@@ -30,7 +30,8 @@ class OpenAIAssistant:
                                                    messages=self.message_history[user_id],
                                                    max_tokens=user_chat_settings['max_tokens'],
                                                    stream=True,
-                                                   temperature=user_chat_settings['temperature']
+                                                   temperature=user_chat_settings['temperature'],
+                                                   user=f"{message.from_user.id}"
                                                    )
         return completion
 
@@ -46,3 +47,13 @@ class OpenAIAssistant:
 
     def put_promt_result_to_history(self, user_id, promt_result):
         self.message_history[user_id].append({'role': 'assistant', 'content': promt_result})
+
+    @staticmethod
+    def create_image_from_message(message: Message, user_picture_settings):
+        image_response = openai.Image.create(
+            prompt=message.text,
+            n=user_picture_settings['num_outputs'],
+            size=user_picture_settings['image_dimensions'],
+            user=f"{message.from_user.id}"
+        )
+        return image_response

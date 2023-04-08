@@ -2,7 +2,7 @@ from typing import Union
 
 from sqlalchemy.exc import IntegrityError
 
-from config.default_settings import default_chatgpt_settings, default_stable_diffusion_settings
+from config.default_settings import default_chatgpt_settings, default_delle_settings
 from database.shemas.user import User, session
 
 
@@ -43,7 +43,7 @@ def select_user_chat_settings(user_id):
 
 def select_user_pictures_settings(user_id):
     settings = session.query(User.pictures_settings).filter(User.id == user_id).first()
-    user_stable_diffusion_settings = default_stable_diffusion_settings.copy()
+    user_stable_diffusion_settings = default_delle_settings.copy()
     try:
         user_stable_diffusion_settings.update(settings[0])
     except (IndexError, TypeError):
@@ -69,9 +69,9 @@ def update_user_pictures_settings(user_id, setting_name, value):
     if user:
         user_pictures_settings = user.pictures_settings.copy()
         user_pictures_settings.update({setting_name: value})
-        if default_stable_diffusion_settings.get(setting_name, None) == value:
+        if default_delle_settings.get(setting_name, None) == value:
             user_pictures_settings.pop(setting_name)
         user.pictures_settings = user_pictures_settings
         session.commit()
-    elif default_stable_diffusion_settings.get(setting_name, None) == value:
+    elif default_delle_settings.get(setting_name, None) == value:
         register_user(user_id=user_id, pictures_settings={setting_name: value})

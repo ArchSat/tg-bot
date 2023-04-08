@@ -17,7 +17,7 @@ openai = OpenAIAssistant()
 @router.message(Command(commands=['start']))
 async def cmd_start(message: Message):
     await message.answer('Данный бот представляет собой обертку для ChatGPT\-3\.5\-turbo модели\.\n'
-                         'Включена поддержка Stable Diffusion 2\.1 по ключевому слову "нарисуй" '
+                         'Включена поддержка DALL·E 2 по ключевому слову "нарисуй" '
                          '\(или с помощью команды /image\)\n'
                          'Взаимодействия с ботом будут быстрее при использовании английского языка\.\n'
                          'Создание изображений занимает значительное время\.\n'
